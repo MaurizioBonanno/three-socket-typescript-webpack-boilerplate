@@ -9,7 +9,16 @@ export default class Game{
     init() {
         this.scene = new Scene();
         this.camera = new PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1 , 1000);
+        this.camera.position.z = 500;
         this.renderer = new WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    animate(){
+        requestAnimationFrame(()=>{
+            this.animate();
+        });
+        this.renderer.render(this.scene,this.camera);
+        console.log('update');
     }
 }
