@@ -1,51 +1,106 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, Matrix4,  Mesh, Vector3, PlaneBufferGeometry, MeshBasicMaterial } from 'three';
+
+import { Scene, PerspectiveCamera, WebGLRenderer, Vector3, PCFShadowMap } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import City from './city';
+import { Hero } from './player';
+import { animable } from './interfaces';
 export default class Game{
   scene: Scene;
   camera: PerspectiveCamera;
   renderer: WebGLRenderer;
   ocontrol: OrbitControls;
+  domelement: HTMLElement;
+  hero: Hero;
+  animationist: animable[];
   constructor(){
       this.init();
   } 
     init() {
+        
+        this.animationist = new Array();
+
+
         this.scene = new Scene();
+
         this.camera = new PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1 , 10000);
-        this.camera.position.z = 500;
-        this.camera.position.y = 400;
-        this.camera.lookAt(new Vector3(0,0,0));
-        this.renderer = new WebGLRenderer();
+        this.camera.position.z = 10;
+       // this.camera.position.y = 400;
+       // this.camera.lookAt(new Vector3(0,0,0));
+
+
+        this.renderer = new WebGLRenderer({antialias: true});
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
-        this.addOrbitControl();
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = PCFShadowMap;
+
+        //aggiungo il mio eroe
+        this.hero = new Hero();        
+        this.scene.add(this.hero.player);
+
+        this.hero.camera.add(this.camera);
+        this.camera.lookAt(new Vector3(this.hero.player.position.x,this.hero.player.position.y,this.hero.player.position.z))
+
+
+        this.domelement = this.renderer.domElement;
+        document.body.appendChild(this.domelement);
+
     }
     addOrbitControl() {
         this.ocontrol = new OrbitControls(this.camera,this.renderer.domElement)
     }
 
-    makeCity(){
-        //aggiungo il suolo 
-        var plane = new PlaneBufferGeometry(2000,2000,20,20);
-        var mat = new MeshBasicMaterial({color:0x9db3b5});
-        var mesh = new Mesh(plane,mat);
-        mesh.rotation.x = -90*Math.PI/180;
-        this.scene.add(mesh);
-
-        //aggiungo gli edifici
-        var geo = new BoxGeometry(1,1,1);
-        geo.applyMatrix4(new Matrix4().makeTranslation(0,0.5,0));
-        var material = new MeshBasicMaterial({color: 0x00ff00,wireframe:true});
-        for (let index = 0; index < 300; index++) {
-            var building = new Mesh(geo.clone(),material.clone());
-            building.position.x = Math.floor(Math.random()*200-100)*6;
-            building.position.z = Math.floor(Math.random()*200-100)*6;
-            building.scale.x = Math.random()*50+10;
-            building.scale.y = Math.random()*building.scale.x*8+8;
-            building.scale.z = building.scale.x;
-            console.log('aggiungo un edificio');
-            this.scene.add(building);
+    addKeyControl(){
+        document.onkeydown = (evt)=>{
+            console.log(evt.key);
+            switch(evt.key){
+                case "ArrowUp":
+                   this.hero.player.translateZ(-this.hero.moveSpeed);
+                break;
+                case "ArrowDown":
+                   // console.log('indietro');
+                   this.hero.player.translateZ(this.hero.moveSpeed);
+                break;
+                case "ArrowRight":
+                   // console.log('destra');
+                    this.hero.player.rotateY(-this.hero.rotateSpeed);
+                break;
+                case "ArrowLeft":
+                  //  console.log('sinistra');
+                  this.hero.player.rotateY(this.hero.rotateSpeed);
+                break;
+                default:
+                    return;
+                break;
+            }
         }
+        document.onkeyup = (evt)=>{
+            console.log(evt.key);
+            switch(evt.key){
+                case "ArrowUp":
+                  //  this.hero.player.position.x = this.hero.player.position.x;
+                break;
+                case "ArrowDown":
+                    console.log('smetti indietro');
 
+                break;
+                case "ArrowRight":
+                    console.log('smetti destra');
+
+                break;
+                case "ArrowLeft":
+                    console.log('smetti sinistra');
+
+                break;
+                default:
+                    return;
+                break;
+            }
+        }
+    }
+
+    makeCity(){
+        var city = new City(this.scene);
+        city.makeCity();
     }
     animate(){
         requestAnimationFrame(()=>{
