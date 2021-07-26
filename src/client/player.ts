@@ -1,29 +1,38 @@
+import { state } from 'states';
 import { Object3D, BoxGeometry, Mesh, MeshBasicMaterial } from 'three';
 import { animable } from './interfaces';
 
 //classe Player è la classe base per tutti giocatori
 export default class Player implements animable{
+    //uno stato di default
+  //  state = state.IDLE;
+    //velocità e rotazione
     moveSpeed;
     rotateSpeed;
+    //un oggetto da usare come genitore
     player: Object3D;
+    //il modello immagine del giocatore
     model: Mesh;
     constructor(){
+        //inizializzo
         this.init();
     }
     init(){
-
         this.player = new Object3D();
         this.player.position.set(0,0,0);
         this.moveSpeed=5;
         this.rotateSpeed = 0.05;
+        //aggiungo una immagine
         this.addModel();
     }
     addModel(){
         var box = new BoxGeometry(2,10,2);
         var mat = new MeshBasicMaterial({color: 0x00ff00});
         this.model = new Mesh(box,mat);
+        //aggiungo l'immagine alla root
         this.player.add(this.model);
     }
+    //metodo animate verrà richiamato nel loop del gioco
     animate() {
         throw new Error('Method not implemented.');
     }
@@ -49,7 +58,7 @@ export class Hero extends Player{
     }
 
     createCameras(){
-        this.cameraBack.position.set(0,5,50)
+        this.cameraBack.position.set(0,5,10)
         this.player.add(this.cameraBack);
 
         this.setActiveCamera(this.cameraBack);
