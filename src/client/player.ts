@@ -1,11 +1,15 @@
-import { state } from 'states';
+
 import { Object3D, BoxGeometry, Mesh, MeshBasicMaterial } from 'three';
 import { animable } from './interfaces';
+import { state } from './states';
 
 //classe Player è la classe base per tutti giocatori
 export default class Player implements animable{
+
+    //valori che servono a identificare il player
+    id;
+    name;
     //uno stato di default
-  //  state = state.IDLE;
     //velocità e rotazione
     moveSpeed;
     rotateSpeed;
@@ -13,11 +17,14 @@ export default class Player implements animable{
     player: Object3D;
     //il modello immagine del giocatore
     model: Mesh;
+    //stato del personaggio
+    stato: state;
     constructor(){
         //inizializzo
         this.init();
     }
     init(){
+        this.stato = state.IDLE;
         this.player = new Object3D();
         this.player.position.set(0,0,0);
         this.moveSpeed=5;

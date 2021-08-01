@@ -4,6 +4,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import City from './city';
 import { Hero } from './player';
 import { animable } from './interfaces';
+import { io } from 'socket.io-client';
+import Player from './player';
+import { KeyControl } from './keycontrols';
+import Map from './maps';
+
+
 export default class Game{
   scene: Scene;
   camera: PerspectiveCamera;
@@ -12,11 +18,12 @@ export default class Game{
   domelement: HTMLElement;
   hero: Hero;
   animationist: animable[];
+  socket: any;
   constructor(){
       this.init();
   } 
     init() {
-        
+        this.socket = io();
         this.animationist = new Array();
 
 
@@ -35,7 +42,7 @@ export default class Game{
 
         //aggiungo il mio eroe
         this.hero = new Hero();        
-        this.scene.add(this.hero.player);
+        this.addPlayer(this.hero);
 
         this.hero.camera.add(this.camera);
         this.camera.lookAt(new Vector3(this.hero.player.position.x,this.hero.player.position.y,this.hero.player.position.z))
@@ -49,47 +56,30 @@ export default class Game{
         this.ocontrol = new OrbitControls(this.camera,this.renderer.domElement)
     }
 
+    addControlsKey(){
+        var controls = new KeyControl(this.hero.player);
+        controls.arrowMovement();
+    }
+
+    //muove con wasd
     addKeyControl(){
         document.onkeydown = (evt)=>{
             console.log(evt.key);
             switch(evt.key){
-                case "ArrowUp":
+                case "w":
                    this.hero.player.translateZ(-this.hero.moveSpeed);
                 break;
-                case "ArrowDown":
+                case "s":
                    // console.log('indietro');
                    this.hero.player.translateZ(this.hero.moveSpeed);
                 break;
-                case "ArrowRight":
+                case "d":
                    // console.log('destra');
                     this.hero.player.rotateY(-this.hero.rotateSpeed);
                 break;
-                case "ArrowLeft":
+                case "a":
                   //  console.log('sinistra');
                   this.hero.player.rotateY(this.hero.rotateSpeed);
-                break;
-                default:
-                    return;
-                break;
-            }
-        }
-        document.onkeyup = (evt)=>{
-            console.log(evt.key);
-            switch(evt.key){
-                case "ArrowUp":
-                  //  this.hero.player.position.x = this.hero.player.position.x;
-                break;
-                case "ArrowDown":
-                    console.log('smetti indietro');
-
-                break;
-                case "ArrowRight":
-                    console.log('smetti destra');
-
-                break;
-                case "ArrowLeft":
-                    console.log('smetti sinistra');
-
                 break;
                 default:
                     return;
@@ -101,6 +91,12 @@ export default class Game{
     makeCity(){
         var city = new City(this.scene);
         city.makeCity();
+        //provo a costruire una mappa
+        var map = new Map(this.scene);
+        map.createMap();
+    }
+    addPlayer(player: Player){
+        this.scene.add(player.player);
     }
     animate(){
         requestAnimationFrame(()=>{

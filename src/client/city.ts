@@ -26,7 +26,7 @@ export default class City{
 
         
         //aggiungo gli edifici
-        this.addBuilding();
+        //this.addBuilding();
 
         this.scene.fog = new FogExp2(0x9db3b5,0.0007);
 
