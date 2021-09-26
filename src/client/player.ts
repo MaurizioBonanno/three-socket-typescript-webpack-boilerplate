@@ -1,5 +1,5 @@
 
-import { Object3D, BoxGeometry, Mesh, MeshBasicMaterial } from 'three';
+import { Object3D, BoxGeometry, Mesh, MeshBasicMaterial, DirectionalLight } from 'three';
 import { animable } from './interfaces';
 import { state } from './states';
 
@@ -7,8 +7,8 @@ import { state } from './states';
 export default class Player implements animable{
 
     //valori che servono a identificare il player
-    id;
-    name;
+    id: any;
+    name: any;
     //uno stato di default
     //velocità e rotazione
     moveSpeed;
@@ -72,5 +72,8 @@ export class Hero extends Player{
     }
     setActiveCamera(camera: Object3D) {
         this.camera = camera;
+    }
+    addLight(light: DirectionalLight){
+        this.player.add(light);
     }
 }

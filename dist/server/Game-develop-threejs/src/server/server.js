@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = __importDefault(require("socket.io"));
+const player_1 = __importDefault(require("../../../myBlockland/src/client/player"));
 const port = process.env.port || 3000;
 var Actions;
 (function (Actions) {
@@ -17,7 +18,7 @@ var Actions;
 })(Actions || (Actions = {}));
 class App {
     constructor(port) {
-        this.players = {};
+        this.players = new Array();
         this.port = port;
         const app = express_1.default();
         app.use(express_1.default.static(path_1.default.join(__dirname, '../client')));
@@ -39,6 +40,11 @@ class App {
         this.io = new socket_io_1.default.Server(this.server);
         //codice socket
         this.io.sockets.on('connection', (socket) => {
+            //provo a creare un nuovo Player
+            var player = new player_1.default();
+            player.id = socket.id;
+            this.players.push(player);
+            //--fine codice nuovo Player
             socket.userData = { x: 0, y: 0, z: 0, heading: 0 }; //valori di default
             console.log(`socket : ${socket.id}, è connesso`);
             socket.emit('setId', { id: socket.id, userData: socket.userData });

@@ -1,6 +1,6 @@
 import { Scene, Vector3, BoxGeometry, MeshPhongMaterial, Mesh } from 'three';
 
-
+//questa classe genera una mappa da un array
 export default class Map{
     scena: Scene;
     HORIZONTAL_UNIT = 100;
@@ -30,7 +30,7 @@ export default class Map{
         
         var z = (row+1)* this.HORIZONTAL_UNIT - this.Z_SIZE *0.5;
         var x = (col+1) * this.HORIZONTAL_UNIT - this.X_SIZE * 0.5;
-        console.log(`tipo:${type},riga:${row},colonna:${col},posZ:${z},posX${x}`);
+        //console.log(`tipo:${type},riga:${row},colonna:${col},posZ:${z},posX${x}`);
         switch(type){
             case '':
                 break;

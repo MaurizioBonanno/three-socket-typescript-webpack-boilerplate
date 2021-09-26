@@ -1,6 +1,5 @@
 
 import { Object3D } from 'three';
-import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 
 export class KeyControl{
 

@@ -17,7 +17,7 @@ var Actions;
 })(Actions || (Actions = {}));
 class App {
     constructor(port) {
-        this.players = {};
+        this.players = new Array();
         this.port = port;
         const app = express_1.default();
         app.use(express_1.default.static(path_1.default.join(__dirname, '../client')));
@@ -39,9 +39,14 @@ class App {
         this.io = new socket_io_1.default.Server(this.server);
         //codice socket
         this.io.sockets.on('connection', (socket) => {
+            //provo a creare un nuovo Player
+            this.players[socket.id] = { x: 0, y: 0, heading: 0, id: socket.id };
+            //--fine codice nuovo Player
             socket.userData = { x: 0, y: 0, z: 0, heading: 0 }; //valori di default
             console.log(`socket : ${socket.id}, è connesso`);
-            socket.emit('setId', { id: socket.id, userData: socket.userData });
+            socket.emit('setId', { id: socket.id, userData: socket.userData, players: this.players });
+            socket.emit('currentPlayers', this.players);
+            // socket.broadcast.emit('newPlayer',player);
             socket.on('init', (data) => {
                 socket.userData.model = data.model;
                 socket.userData.color = data.colour;
@@ -67,6 +72,7 @@ class App {
             });
             socket.on('disconnect', () => {
                 console.log(`socket disconnesso id: ${socket.id}`);
+                delete this.players[socket.id];
                 socket.broadcast.emit('deletePlayer', { id: socket.id });
             });
         });
